@@ -5,6 +5,7 @@ export const styles = StyleSheet.create({
     padding: 10,
     display: "flex",
     backgroundColor: "#e9e9e9",
+    borderRadius: 20,
     width: 400,
     gap: 20,
   },

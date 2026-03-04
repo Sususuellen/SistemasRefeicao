@@ -7,9 +7,15 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 type props = {
   nome: string;
   qtdRegistros: number;
+  onPressNovo: () => void;
 };
 
-export default function HeaderComponent({ nome, qtdRegistros }: props) {
+export default function HeaderComponent({
+  nome,
+  qtdRegistros,
+  onPressNovo,
+  ...rest
+}: props) {
   return (
     <View style={styles.container}>
       <View>
@@ -23,7 +29,12 @@ export default function HeaderComponent({ nome, qtdRegistros }: props) {
         )}
       </View>
       <View style={styles.button}>
-        <ButtonComponent title="Novo">
+        <ButtonComponent
+          title="Novo"
+          onPress={() => {
+            onPressNovo();
+          }}
+        >
           <AntDesign name="plus" size={14} color="white" />
         </ButtonComponent>
       </View>

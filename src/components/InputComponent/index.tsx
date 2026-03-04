@@ -1,9 +1,15 @@
-import { View, TextInput, TextStyle, ViewStyle } from "react-native";
+import {
+  View,
+  TextInput,
+  TextStyle,
+  ViewStyle,
+  TextInputProps,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { styles } from "./styles";
 
-type props = {
+type props = TextInputProps & {
   placeHolder?: string;
   style?: ViewStyle;
   iconName?: keyof typeof Ionicons.glyphMap;
@@ -15,6 +21,7 @@ export default function InputComponent({
   style,
   iconName,
   iconColor,
+  ...rest
 }: props) {
   return (
     <View style={[styles.container, style]}>
@@ -26,7 +33,7 @@ export default function InputComponent({
           color={iconColor}
         />
       )}
-      <TextInput placeholder={placeHolder} style={styles.text} />
+      <TextInput placeholder={placeHolder} style={styles.text} {...rest} />
     </View>
   );
 }
