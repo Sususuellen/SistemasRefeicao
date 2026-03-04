@@ -4,7 +4,6 @@ import { Orcamento } from "../interfaces/Orcamento";
 
 const STORAGE_KEY = "@adicionar:orcamento";
 
-
 async function get(): Promise<Orcamento[]> {
   try {
     const storage = await AsyncStorage.getItem(STORAGE_KEY);
@@ -37,8 +36,30 @@ async function add(newItem: Orcamento): Promise<Orcamento[]> {
   return updatedItems;
 }
 
+async function excluirOrcamento() {
+  
+}
+
+async function remove(item: Orcamento): Promise<Orcamento[]> {
+  if (!item.id) throw new Error("ORCAMENTO_ERROR!");
+
+  const items = await get();
+
+  const updatedItems = items.filter((orcamento) => orcamento.id !== item.id);
+
+  await save(updatedItems);
+
+  return updatedItems;
+}
+
+async function removeAll(): Promise<void> {
+  await AsyncStorage.clear();
+}
+
 export const orcamentoStorage = {
   get,
   getByStatus,
   add,
+  remove,
+  removeAll,
 };

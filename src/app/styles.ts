@@ -13,10 +13,10 @@ export const styles = StyleSheet.create({
     paddingTop: 24,
   },
   search: {
-    display: "flex",
     flexDirection: "row",
-    justifyContent: "space-around",
-    gap: 20,
+    width: "100%",
+    justifyContent: "space-between",
+    padding: 10
   },
   separator: {
     width: "100%",
@@ -25,11 +25,10 @@ export const styles = StyleSheet.create({
     marginVertical: 16,
   },
   options: {
-    display: "flex",
-    alignContent: "center",
-    width: 40,
-    borderRadius: 20,
     alignItems: "center",
+    justifyContent: "center",
+    width: 50,
+    borderRadius: 30,
     backgroundColor: "#f0f0f0",
   },
   emptyText: {

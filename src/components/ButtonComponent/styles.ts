@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     borderRadius: 10,
-    alignSelf: "flex-start",
+    alignSelf: "auto",
   },
   title: {
     color: "#ffffff",

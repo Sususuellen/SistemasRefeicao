@@ -33,8 +33,8 @@ export default function App() {
   }
 
   async function addOrcamento() {
-    if (!titulo.trim() && !cliente.trim() && !percDesconto) {
-      return Alert.alert("Error", `Preencha todos os campos, tente novamente.`);
+    if (!titulo.trim() || !cliente.trim() || !percDesconto) {
+      return Alert.alert("Erro", "Preencha todos os campos.");
     }
 
     const payload = {
@@ -50,6 +50,18 @@ export default function App() {
     await orcamentoStorage.add(payload);
     Alert.alert("Sucesso!", "Sucesso ao adicionar um novo orçamento!");
     await getOrcamentos();
+
+    setModalVisible(false);
+
+    setTitulo("");
+    setCliente("");
+    setPercDesconto("");
+  }
+
+  async function excluirOrcamento(item: Orcamento) {
+    await orcamentoStorage.remove(item);
+    Alert.alert("Sucesso", "Sucesso ao remover um orçamento");
+    await getOrcamentos();
   }
 
   useEffect(() => {
@@ -60,13 +72,13 @@ export default function App() {
     <View style={styles.container}>
       <HeaderComponent
         nome="Wendell"
-        qtdRegistros={0}
+        qtdRegistros={itens.length}
         onPressNovo={() => setModalVisible(true)}
       ></HeaderComponent>
       <View style={styles.search}>
         <InputComponent
           placeHolder="Titulo ou Cliente"
-          style={{ width: 250 }}
+          style={{ width: 350 }}
           iconName="search"
         ></InputComponent>
         <TouchableOpacity style={styles.options}>
@@ -81,7 +93,9 @@ export default function App() {
             titulo={item.titulo}
             cliente={item.cliente}
             status={item.status}
-            // percentualDesconto={item.desconto}
+            valor={item.percentualDesconto ?? 0}
+            onPressExcluir={() => excluirOrcamento(item)}
+            onPressEditar={() => console.log("Fui clicado")}
           ></CardComponent>
         )}
         showsVerticalScrollIndicator={false}
@@ -96,7 +110,7 @@ export default function App() {
         onClose={() => setModalVisible(false)}
         title="Adicione um novo orçamento"
       >
-        <View style={{ gap: 30, marginTop: 10 }}>
+        <View style={{ gap: 30, marginTop: 10, alignItems: "center" }}>
           <InputComponent
             placeHolder="Titulo"
             onChangeText={setTitulo}
