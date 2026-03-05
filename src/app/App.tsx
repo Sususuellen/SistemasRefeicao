@@ -12,6 +12,7 @@ import { orcamentoStorage } from "../storage/orcamentoStorage";
 import { Orcamento } from "../interfaces/Orcamento";
 import ModalComponent from "../components/ModalComponent";
 import { Picker } from "@react-native-picker/picker";
+import LoadingComponent from "../components/LoadingComponent";
 
 export default function App() {
   const [itens, setItens] = useState<Orcamento[]>([]);
@@ -25,6 +26,7 @@ export default function App() {
     StatusOrcamento.Rascunho,
   );
   const [dataCriacao, setDataCriacao] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(false);
 
   function pegarDataAtual(): Date {
     return new Date();
@@ -44,6 +46,8 @@ export default function App() {
       return Alert.alert("Erro", "Preencha todos os campos.");
     }
 
+    setIsLoading(true);
+
     const payload = {
       id: Math.random().toString().substring(2),
       titulo,
@@ -58,6 +62,7 @@ export default function App() {
     Alert.alert("Sucesso!", "Sucesso ao adicionar um novo orçamento!");
     await getOrcamentos();
 
+    setIsLoading(false);
     setModalVisible(false);
 
     setTitulo("");
@@ -66,8 +71,10 @@ export default function App() {
   }
 
   async function excluirOrcamento(item: Orcamento) {
+    setIsLoading(true);
     await orcamentoStorage.remove(item);
     Alert.alert("Sucesso", "Sucesso ao remover um orçamento");
+    setIsLoading(false);
     await getOrcamentos();
   }
 
@@ -75,6 +82,8 @@ export default function App() {
     if (!titulo.trim() || !cliente.trim() || !percDesconto?.trim()) {
       return Alert.alert("Error!", "Preencha um campo!");
     }
+
+    setIsLoading(true);
 
     const payload = {
       id: orcamentoId,
@@ -88,6 +97,7 @@ export default function App() {
 
     await orcamentoStorage.update(payload);
     await getOrcamentos();
+    setIsLoading(false);
     fecharModal();
   }
 
@@ -214,6 +224,7 @@ export default function App() {
         </View>
       </ModalComponent>
       <StatusBar style="auto" />
+      <LoadingComponent isLoading={isLoading} />
     </View>
   );
 }
