@@ -9,5 +9,5 @@ export interface Orcamento {
   percentualDesconto?: number;
   status: StatusOrcamento;
   dataCriacao: Date;
-  dataAtualizacao?: string;
+  dataAtualizacao?: Date;
 }

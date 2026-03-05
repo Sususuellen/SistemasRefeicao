@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { orcamentoStorage } from "../storage/orcamentoStorage";
 import { Orcamento } from "../interfaces/Orcamento";
 import ModalComponent from "../components/ModalComponent";
+import { Picker } from "@react-native-picker/picker";
 
 export default function App() {
   const [itens, setItens] = useState<Orcamento[]>([]);
@@ -18,6 +19,12 @@ export default function App() {
   const [titulo, setTitulo] = useState("");
   const [cliente, setCliente] = useState("");
   const [percDesconto, setPercDesconto] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [orcamentoId, setOrcamentoId] = useState("");
+  const [statusOrcamento, setStatusOrcamento] = useState(
+    StatusOrcamento.Rascunho,
+  );
+  const [dataCriacao, setDataCriacao] = useState<Date>(new Date());
 
   function pegarDataAtual(): Date {
     return new Date();
@@ -41,7 +48,7 @@ export default function App() {
       id: Math.random().toString().substring(2),
       titulo,
       cliente,
-      status: StatusOrcamento.Enviado,
+      status: StatusOrcamento.Rascunho,
       percentualDesconto: Number(percDesconto),
       dataCriacao: pegarDataAtual(),
       itens: [],
@@ -64,6 +71,48 @@ export default function App() {
     await getOrcamentos();
   }
 
+  async function salvarOrcamento() {
+    if (!titulo.trim() || !cliente.trim() || !percDesconto?.trim()) {
+      return Alert.alert("Error!", "Preencha um campo!");
+    }
+
+    const payload = {
+      id: orcamentoId,
+      titulo,
+      cliente,
+      status: statusOrcamento,
+      percentualDesconto: Number(percDesconto),
+      dataCriacao: dataCriacao,
+      itens: [],
+    };
+
+    await orcamentoStorage.update(payload);
+    await getOrcamentos();
+    fecharModal();
+  }
+
+  function abrirModalCriar() {
+    setIsEditing(false);
+    setModalVisible(true);
+  }
+
+  function abrirModalEditar(item: Orcamento) {
+    setIsEditing(true);
+    setOrcamentoId(item.id);
+    setTitulo(item.titulo);
+    setCliente(item.cliente);
+    setPercDesconto(item.percentualDesconto?.toString() || "");
+    setDataCriacao(item.dataCriacao);
+    setModalVisible(true);
+  }
+
+  function fecharModal() {
+    setTitulo("");
+    setCliente("");
+    setPercDesconto("");
+    setModalVisible(false);
+  }
+
   useEffect(() => {
     getOrcamentos();
   }, []);
@@ -73,7 +122,7 @@ export default function App() {
       <HeaderComponent
         nome="Wendell"
         qtdRegistros={itens.length}
-        onPressNovo={() => setModalVisible(true)}
+        onPressNovo={() => abrirModalCriar()}
       ></HeaderComponent>
       <View style={styles.search}>
         <InputComponent
@@ -82,7 +131,7 @@ export default function App() {
           iconName="search"
         ></InputComponent>
         <TouchableOpacity style={styles.options}>
-          <Ionicons name="options" size={20} color={"#6A46EB"} />
+          <Ionicons name="options" size={20} color={"#2AA1D9"} />
         </TouchableOpacity>
       </View>
       <FlatList
@@ -95,7 +144,7 @@ export default function App() {
             status={item.status}
             valor={item.percentualDesconto ?? 0}
             onPressExcluir={() => excluirOrcamento(item)}
-            onPressEditar={() => console.log("Fui clicado")}
+            onPressEditar={() => abrirModalEditar(item)}
           ></CardComponent>
         )}
         showsVerticalScrollIndicator={false}
@@ -107,29 +156,60 @@ export default function App() {
       />
       <ModalComponent
         visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        title="Adicione um novo orçamento"
+        onClose={() => fecharModal()}
+        title={isEditing ? "Adicione um novo orçamento" : "Edite seu orçamento"}
       >
         <View style={{ gap: 30, marginTop: 10, alignItems: "center" }}>
           <InputComponent
             placeHolder="Titulo"
+            value={titulo}
             onChangeText={setTitulo}
             style={{ width: 250 }}
           ></InputComponent>
           <InputComponent
             placeHolder="Cliente"
+            value={cliente}
             onChangeText={setCliente}
             style={{ width: 250 }}
           ></InputComponent>
           <InputComponent
             placeHolder="Percentual de desconto"
+            value={percDesconto}
             onChangeText={setPercDesconto}
             style={{ width: 250 }}
+            keyboardType="numeric"
           ></InputComponent>
-
+          {isEditing && (
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={statusOrcamento}
+                onValueChange={(value) =>
+                  setStatusOrcamento(value as StatusOrcamento)
+                }
+                style={{ flex: 1 }}
+              >
+                {Object.values(StatusOrcamento)
+                  .filter((v) => typeof v === "string")
+                  .map((status) => (
+                    <Picker.Item
+                      key={status}
+                      label={status as string}
+                      value={
+                        StatusOrcamento[status as keyof typeof StatusOrcamento]
+                      }
+                    />
+                  ))}
+              </Picker>
+            </View>
+          )}
+          {isEditing && dataCriacao && (
+            <Text>
+              Data de criação: {dataCriacao.toLocaleDateString("pt-BR")}
+            </Text>
+          )}
           <ButtonComponent
-            title="Adicionar novo orçamento"
-            onPress={() => addOrcamento()}
+            title={isEditing ? "Salvar alterações" : "Adicionar novo orçamento"}
+            onPress={isEditing ? salvarOrcamento : addOrcamento}
           ></ButtonComponent>
         </View>
       </ModalComponent>

@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
-    padding: 10
+    padding: 10,
   },
   separator: {
     width: "100%",
@@ -36,5 +36,11 @@ export const styles = StyleSheet.create({
     color: "#808080",
     fontSize: 14,
     fontWeight: 600,
+  },
+  pickerContainer: {
+    width: 250,
+    height: 50,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 20,
   },
 });

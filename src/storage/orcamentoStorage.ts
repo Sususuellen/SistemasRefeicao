@@ -8,7 +8,14 @@ async function get(): Promise<Orcamento[]> {
   try {
     const storage = await AsyncStorage.getItem(STORAGE_KEY);
 
-    return storage ? JSON.parse(storage) : [];
+    if (!storage) return [];
+
+    const parsed: Orcamento[] = JSON.parse(storage);
+
+    return parsed.map((item) => ({
+      ...item,
+      dataCriacao: new Date(item.dataCriacao),
+    }));
   } catch (error) {
     throw new Error("ORCAMENTOS_GET: " + error);
   }
@@ -36,8 +43,20 @@ async function add(newItem: Orcamento): Promise<Orcamento[]> {
   return updatedItems;
 }
 
-async function excluirOrcamento() {
-  
+async function excluirOrcamento() {}
+
+async function update(item: Orcamento): Promise<Orcamento[]> {
+  if (!item.id) throw new Error("ORCAMENTO_ERROR: ID não fornecido!");
+
+  const items = await get();
+
+  const updatedItems = items.map((orcamento) =>
+    orcamento.id === item.id ? item : orcamento,
+  );
+
+  await save(updatedItems);
+
+  return updatedItems;
 }
 
 async function remove(item: Orcamento): Promise<Orcamento[]> {
@@ -60,6 +79,7 @@ export const orcamentoStorage = {
   get,
   getByStatus,
   add,
+  update,
   remove,
   removeAll,
 };
