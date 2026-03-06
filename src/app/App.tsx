@@ -13,6 +13,7 @@ import { Orcamento } from "../interfaces/Orcamento";
 import ModalComponent from "../components/ModalComponent";
 import { Picker } from "@react-native-picker/picker";
 import LoadingComponent from "../components/LoadingComponent";
+import InfoComponent from "../components/InfoComponent";
 
 export default function App() {
   const [itens, setItens] = useState<Orcamento[]>([]);
@@ -27,6 +28,10 @@ export default function App() {
   );
   const [dataCriacao, setDataCriacao] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
+  const [infoTitulo, setInfoTitulo] = useState("");
+  const [infoMensagem, setInfoMensagem] = useState("");
+  const [infoErro, setInfoErro] = useState(false);
 
   function pegarDataAtual(): Date {
     return new Date();
@@ -36,14 +41,14 @@ export default function App() {
     try {
       const itens = await orcamentoStorage.get();
       setItens(itens);
-    } catch (err) {
-      Alert.alert("Erro", "não foi possivel trazer os dados dos orçamentos");
-    }
+    } catch (err) {}
   }
 
   async function addOrcamento() {
     if (!titulo.trim() || !cliente.trim() || !percDesconto) {
-      return Alert.alert("Erro", "Preencha todos os campos.");
+      setModalVisible(false);
+      mostrarInfo("Error!", "Preencha todos os dados!", true);
+      return;
     }
 
     setIsLoading(true);
@@ -59,7 +64,7 @@ export default function App() {
     };
 
     await orcamentoStorage.add(payload);
-    Alert.alert("Sucesso!", "Sucesso ao adicionar um novo orçamento!");
+    mostrarInfo("Sucesso", "Sucesso ao adicionar um orçamento");
     await getOrcamentos();
 
     setIsLoading(false);
@@ -73,14 +78,14 @@ export default function App() {
   async function excluirOrcamento(item: Orcamento) {
     setIsLoading(true);
     await orcamentoStorage.remove(item);
-    Alert.alert("Sucesso", "Sucesso ao remover um orçamento");
+    mostrarInfo("Sucesso!", "tudo certo ao excluir");
     setIsLoading(false);
     await getOrcamentos();
   }
 
   async function salvarOrcamento() {
     if (!titulo.trim() || !cliente.trim() || !percDesconto?.trim()) {
-      return Alert.alert("Error!", "Preencha um campo!");
+      return mostrarInfo("Erro", "preencha todos os dados!", true);
     }
 
     setIsLoading(true);
@@ -121,6 +126,13 @@ export default function App() {
     setCliente("");
     setPercDesconto("");
     setModalVisible(false);
+  }
+
+  function mostrarInfo(titulo: string, mensagem: string, erro = false) {
+    setInfoTitulo(titulo);
+    setInfoMensagem(mensagem);
+    setInfoErro(erro);
+    setInfoVisible(true);
   }
 
   useEffect(() => {
@@ -223,6 +235,14 @@ export default function App() {
           ></ButtonComponent>
         </View>
       </ModalComponent>
+      <InfoComponent
+        titulo={infoTitulo}
+        mensagem={infoMensagem}
+        isErro={infoErro}
+        visible={infoVisible}
+        onClose={() => setInfoVisible(false)}
+      />
+      ;
       <StatusBar style="auto" />
       <LoadingComponent isLoading={isLoading} />
     </View>
