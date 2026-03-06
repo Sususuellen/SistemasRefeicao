@@ -33,18 +33,35 @@ export default function App() {
   const [infoMensagem, setInfoMensagem] = useState("");
   const [infoErro, setInfoErro] = useState(false);
 
-  function pegarDataAtual(): Date {
-    return new Date();
-  }
+  useEffect(() => {
+    getOrcamentos();
+  }, []);
 
-  async function getOrcamentos() {
+  const pegarDataAtual = (): Date => {
+    return new Date();
+  };
+
+  const getByStatusRecusado = async () => {
+    try {
+      const items = await orcamentoStorage.getBystatusRecusado();
+      setItens(items);
+    } catch (err) {
+      mostrarInfo("Erro!", "Erro ao pegar seus orçamentos recusados", true);
+    }
+
+    return itens.filter((item) => item.status === StatusOrcamento.Recusado);
+  };
+
+  const getOrcamentos = async () => {
     try {
       const itens = await orcamentoStorage.get();
       setItens(itens);
-    } catch (err) {}
-  }
+    } catch (err) {
+      console.log(`error: ${err}`);
+    }
+  };
 
-  async function addOrcamento() {
+  const addOrcamento = async () => {
     if (!titulo.trim() || !cliente.trim() || !percDesconto) {
       setModalVisible(false);
       mostrarInfo("Error!", "Preencha todos os dados!", true);
@@ -73,17 +90,17 @@ export default function App() {
     setTitulo("");
     setCliente("");
     setPercDesconto("");
-  }
+  };
 
-  async function excluirOrcamento(item: Orcamento) {
+  const excluirOrcamento = async (item: Orcamento) => {
     setIsLoading(true);
     await orcamentoStorage.remove(item);
     mostrarInfo("Sucesso!", "tudo certo ao excluir");
     setIsLoading(false);
     await getOrcamentos();
-  }
+  };
 
-  async function salvarOrcamento() {
+  const salvarOrcamento = async () => {
     if (!titulo.trim() || !cliente.trim() || !percDesconto?.trim()) {
       return mostrarInfo("Erro", "preencha todos os dados!", true);
     }
@@ -104,14 +121,14 @@ export default function App() {
     await getOrcamentos();
     setIsLoading(false);
     fecharModal();
-  }
+  };
 
-  function abrirModalCriar() {
+  const abrirModalCriar = () => {
     setIsEditing(false);
     setModalVisible(true);
-  }
+  };
 
-  function abrirModalEditar(item: Orcamento) {
+  const abrirModalEditar = (item: Orcamento) => {
     setIsEditing(true);
     setOrcamentoId(item.id);
     setTitulo(item.titulo);
@@ -119,25 +136,21 @@ export default function App() {
     setPercDesconto(item.percentualDesconto?.toString() || "");
     setDataCriacao(item.dataCriacao);
     setModalVisible(true);
-  }
+  };
 
-  function fecharModal() {
+  const fecharModal = () => {
     setTitulo("");
     setCliente("");
     setPercDesconto("");
     setModalVisible(false);
-  }
+  };
 
-  function mostrarInfo(titulo: string, mensagem: string, erro = false) {
+  const mostrarInfo = (titulo: string, mensagem: string, erro = false) => {
     setInfoTitulo(titulo);
     setInfoMensagem(mensagem);
     setInfoErro(erro);
     setInfoVisible(true);
-  }
-
-  useEffect(() => {
-    getOrcamentos();
-  }, []);
+  };
 
   return (
     <View style={styles.container}>
@@ -152,7 +165,10 @@ export default function App() {
           style={{ width: 350 }}
           iconName="search"
         ></InputComponent>
-        <TouchableOpacity style={styles.options}>
+        <TouchableOpacity
+          style={styles.options}
+          onPress={() => getByStatusRecusado()}
+        >
           <Ionicons name="options" size={20} color={"#2AA1D9"} />
         </TouchableOpacity>
       </View>
@@ -242,7 +258,6 @@ export default function App() {
         visible={infoVisible}
         onClose={() => setInfoVisible(false)}
       />
-      ;
       <StatusBar style="auto" />
       <LoadingComponent isLoading={isLoading} />
     </View>

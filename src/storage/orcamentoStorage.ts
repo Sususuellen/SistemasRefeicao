@@ -27,6 +27,18 @@ async function getByStatus(status: StatusOrcamento): Promise<Orcamento[]> {
   return itens.filter((item) => item.status === status);
 }
 
+const getBystatusRecusado = async (): Promise<Orcamento[]> => {
+  const items = await get();
+
+  return items.filter((item) => item.status === StatusOrcamento.Recusado);
+};
+
+const getByCliente = async (cliente: Orcamento): Promise<Orcamento[]> => {
+  const items = await get();
+
+  return items.filter((item) => item.cliente === cliente.cliente);
+};
+
 async function save(items: Orcamento[]): Promise<void> {
   try {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -78,6 +90,7 @@ async function removeAll(): Promise<void> {
 export const orcamentoStorage = {
   get,
   getByStatus,
+  getBystatusRecusado,
   add,
   update,
   remove,

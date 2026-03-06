@@ -1,7 +1,7 @@
 import { Modal, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles";
-import { useEffect } from "react";
+import { ComponentProps, useEffect } from "react";
 
 type Props = {
   titulo: string;
@@ -28,6 +28,8 @@ export default function InfoComponent({
     }
   }, [visible]);
 
+  const iconName = isErro ? "alert-circle-outline" : "checkmark-circle-outline";
+
   return (
     <Modal
       animationType="fade"
@@ -39,9 +41,7 @@ export default function InfoComponent({
         <View style={styles.container}>
           <View style={styles.header}>
             <Ionicons
-              name={
-                isErro ? "alert-circle-outline" : "checkmark-circle-outline"
-              }
+              name={iconName}
               size={25}
               color={isErro ? "#dc7820" : "#25d141"}
             />
