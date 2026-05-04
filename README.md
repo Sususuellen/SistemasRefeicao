@@ -25,23 +25,6 @@ O objetivo do projeto é praticar conceitos fundamentais de desenvolvimento mobi
 | Expo Vector Icons | ^15.0.3 | Ícones |
 
 ---
-
-## 📂 Estrutura do Projeto
-ControleRefeicoes/
-├── src/
-│ ├── components/ # Componentes reutilizáveis
-│ ├── pages/ # Telas do aplicativo
-│ ├── routes/ # Navegação (React Navigation)
-│ ├── storage/ # AsyncStorage
-│ ├── global/ # Temas e estilos globais
-│ ├── assets/ # Imagens e recursos estáticos
-│ └── utils/ # Funções auxiliares
-├── App.tsx
-├── index.js
-├── package.json
-└── tsconfig.json
-
----
  
 ## ⚙️ Pré-requisitos
  
