@@ -108,5 +108,3 @@ O projeto utiliza o **React Navigation** com suporte a:
 **Suellen Bragança Andrade**
 - GitHub: [@Sususuellen]
 (https://github.com/Sususuellen)
----
-# AplicativoOrcamento
